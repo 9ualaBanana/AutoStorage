@@ -112,7 +112,7 @@ public class TempStorage<T> : HashSet<TempStorageItem<T>>
 
     TempStorageItem<T>? ItemWithElapsedStorageTimer(object elapsedStorageTimer)
     {
-        try { return this.Single(item => Equals(item.Value, elapsedStorageTimer)); }
+        try { return this.Single(item => Equals(item.Timer, elapsedStorageTimer)); }
         catch { return null; }
     }
 
