@@ -9,7 +9,7 @@ public class StorageTimerFactoryTest
 
         var storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
 
-        ((double)storageTimerFactory.DefaultStorageTime!).Should().Be(defaultStorageTime);
+        storageTimerFactory.DefaultStorageTime.Should().Be(defaultStorageTime);
     }
 
     [Fact]
@@ -20,7 +20,7 @@ public class StorageTimerFactoryTest
         var unlimitedStorageTimer = storageTimerFactory
             .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);
 
-        StorageTimer.IsUnlimited(unlimitedStorageTimer).Should().BeTrue();
+        unlimitedStorageTimer.IsUnlimited.Should().BeTrue();
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class StorageTimerFactoryTest
         var timerWithDefaultStorageTime = storageTimerFactory
             .CreateWith(StorageTime.Default, TestData.ElapsedEventHandlerStub)!;
 
-        timerWithDefaultStorageTime.Interval.Should().Be((double)storageTimerFactory.DefaultStorageTime!);
+        timerWithDefaultStorageTime.Interval.Should().Be(storageTimerFactory.DefaultStorageTime);
     }
 
     [Fact]

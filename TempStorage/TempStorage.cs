@@ -4,11 +4,11 @@ namespace System.Collections.Specialized;
 
 public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<T>
 {
-    public StorageTime DefaultStorageTime => _storageTimerFactory.DefaultStorageTime;
-    public event EventHandler<TempStorageItem<T>>? ItemStorageTimeElapsed;
-
     readonly HashSet<TempStorageItem<T>> _tempStorage;
     readonly StorageTimerFactory _storageTimerFactory;
+
+    public StorageTime DefaultStorageTime => _storageTimerFactory.DefaultStorageTime;
+    public event EventHandler<TempStorageItem<T>>? ItemStorageTimeElapsed;
 
 
     #region Constructors
@@ -90,7 +90,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     static void Update(TempStorageItem<T> storedItem, TempStorageItem<T> newItem, bool updateStorageTimer)
     {
         if (updateStorageTimer) storedItem.Timer = newItem.Timer;
-        storedItem.Timer?.Restart();
+        storedItem.Timer.Restart();
     }
 
     #region ICollection<T>
@@ -202,7 +202,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         {
             if (Remove(itemWithElapsedStorageTimer))
             {
-                itemWithElapsedStorageTimer.Timer!.Elapsed -= OnStorageTimeElapsed;
+                itemWithElapsedStorageTimer.Timer.Elapsed -= OnStorageTimeElapsed;
                 ItemStorageTimeElapsed?.Invoke(this, itemWithElapsedStorageTimer);
             }
         }

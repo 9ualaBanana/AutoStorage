@@ -10,13 +10,13 @@ public class StorageTimerTest
         var unlimitedStorageTimer = storageTimerFactory
             .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);
 
-        StorageTimer.IsUnlimited(unlimitedStorageTimer).Should().BeTrue();
+        unlimitedStorageTimer.IsUnlimited.Should().BeTrue();
     }
 
     [Fact]
-    public void Initialize_ShouldThrowWhen_NoElapsedEventHandlersAreProvided()
+    public void Initialize_ShouldThrow_WhenNoElapsedEventHandlersAreProvided()
     {
-        Action initialization = () => new GTimer().Initialize();
+        Action initialization = () => ((StorageTimer)new GTimer()).Initialize();
 
         initialization.Should().Throw<MissingMethodException>();
     }
@@ -24,10 +24,10 @@ public class StorageTimerTest
     [Fact]
     public void Initialize_Should_StartStorageTimer()
     {
-        var storageTimer = new GTimer();
+        var storageTimer = (StorageTimer)new GTimer();
 
         storageTimer.Initialize(TestData.ElapsedEventHandlerStub);
 
-        storageTimer.Enabled.Should().BeTrue();
+        ((GTimer)storageTimer!).Enabled.Should().BeTrue();
     }
 }

@@ -31,6 +31,6 @@ public class StorageTimeTest
         var defaultStorageTimer = new StorageTimerFactory(defaultStorageTime)
             .CreateWith(StorageTime.Default, TestData.ElapsedEventHandlerStub);
 
-        ((double)StorageTime.Of(defaultStorageTimer)!).Should().BeApproximately(defaultStorageTime, 1);
+        StorageTime.Of(defaultStorageTimer).Should().Be(defaultStorageTime);
     }
 }

@@ -5,7 +5,7 @@ namespace System.Collections.Specialized;
 public class TempStorageItem<T> : IEquatable<TempStorageItem<T>>
 {
     public readonly T Value;
-    public GTimer? Timer;
+    public StorageTimer Timer;
 
 
     #region Constructors
@@ -13,11 +13,11 @@ public class TempStorageItem<T> : IEquatable<TempStorageItem<T>>
     {
     }
 
-    internal TempStorageItem(KeyValuePair<T, GTimer?> pair) : this(pair.Key, pair.Value)
+    internal TempStorageItem(KeyValuePair<T, StorageTimer> pair) : this(pair.Key, pair.Value)
     {
     }
 
-    internal TempStorageItem(T value, GTimer? timer)
+    internal TempStorageItem(T value, StorageTimer timer)
     {
         Value = value;
         Timer = timer;
@@ -52,7 +52,7 @@ internal static class TempStorageItemExtensions
 
     internal static TempStorageItem<T>? ItemWith<T>(this IEnumerable<TempStorageItem<T>> items, object elapsedStorageTimer)
     {
-        try { return items.Single(item => Equals(item.Timer, elapsedStorageTimer)); }
+        try { return items.Single(item => Equals((GTimer?)item.Timer, elapsedStorageTimer)); }
         catch { return null; }
     }
 }

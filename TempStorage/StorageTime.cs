@@ -4,10 +4,10 @@ namespace System.Collections.Specialized;
 
 public struct StorageTime
 {
+    readonly Interval? _value;
+
     public static readonly Interval? Unlimited = null;
     public static readonly Interval Default = default;
-
-    readonly Interval? _value;
 
     public bool IsUnlimited => _value == Unlimited;
     public bool IsDefault => _value == Default;
@@ -16,7 +16,7 @@ public struct StorageTime
     StorageTime(Interval? storageTime) => _value = storageTime;
 
 
-    internal static StorageTime Of(GTimer? storageTimer) => StorageTimer.IsUnlimited(storageTimer) ?
+    internal static StorageTime Of(StorageTimer storageTimer) => storageTimer.IsUnlimited ?
         StorageTime.Unlimited : storageTimer.Interval;
 
     #region Conversions
