@@ -4,6 +4,21 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<PackageId>TempStorage</PackageId>
+	<Version>1.0.0</Version>
+	<Authors>9ualaBanana</Authors>
+	<Company>9ualaBanana</Company>
+	<Copyright>9ualaBanana</Copyright>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<Description>Collection that automatically removes items after their storage time is elapsed.</Description>
+	<RepositoryUrl>https://github.com/9ualaBanana/TempStorage</RepositoryUrl>
+	<PackageTags>
+		interval; time; storage-time; timer; library; storage; collection; temp;
+		temporary-storage; timeout; set; auto; automatic-storage; auto-storage;
+	</PackageTags>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
