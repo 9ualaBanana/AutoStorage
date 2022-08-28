@@ -5,7 +5,7 @@ public class StorageTimerTest
     [Fact]
     public void IsUnlimited_ShouldBe_TrueFor_UnlimitedStorageTimer()
     {
-        var storageTimerFactory = new StorageTimerFactory(TestData.FiniteStorageTime);
+        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime);
 
         var unlimitedStorageTimer = storageTimerFactory
             .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);

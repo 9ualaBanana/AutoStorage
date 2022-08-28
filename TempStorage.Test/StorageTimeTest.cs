@@ -17,7 +17,7 @@ public class StorageTimeTest
     [Fact]
     public void StorageTimeOf_UnlimitedStorageTimer_ShouldBe_Unlimited()
     {
-        var unlimitedStorageTimer = new StorageTimerFactory(TestData.FiniteStorageTime)
+        var unlimitedStorageTimer = new StorageTimerFactory(TestData.StorageTime)
             .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);
 
         ((Interval?)StorageTime.Of(unlimitedStorageTimer)).Should().Be(StorageTime.Unlimited);
@@ -26,7 +26,7 @@ public class StorageTimeTest
     [Fact]
     public void StorageTimeOf_DefaultStorageTimer_ShouldBe_Default()
     {
-        var defaultStorageTime = TestData.FiniteStorageTime;
+        var defaultStorageTime = TestData.StorageTime;
 
         var defaultStorageTimer = new StorageTimerFactory(defaultStorageTime)
             .CreateWith(StorageTime.Default, TestData.ElapsedEventHandlerStub);

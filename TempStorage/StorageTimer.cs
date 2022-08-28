@@ -16,6 +16,7 @@ internal static class StorageTimer
 
         foreach (var elapsedEventHandler in with)
             timer.Elapsed += elapsedEventHandler;
+        timer.AutoReset = false;
         timer.Start();
         return timer;
     }
