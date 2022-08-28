@@ -9,7 +9,7 @@ public class ConstructorsTest
     [Fact]
     public void Empty()
     {
-        var tempStorage = new TempStorage<int>();
+        var tempStorage = new AutoStorage<int>();
 
         tempStorage.DefaultStorageTime.IsUnlimited.Should().BeTrue();
         tempStorage.Should().BeEmpty();
@@ -18,7 +18,7 @@ public class ConstructorsTest
     [Fact]
     public void DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(TestData.StorageTime);
 
         tempStorage.Should().BeEmpty();
         DefaultStorageTimeShouldBeSet(tempStorage);
@@ -27,7 +27,7 @@ public class ConstructorsTest
     [Fact]
     public void Comparer_DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(TempStorageItemIntComparer, TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(TempStorageItemIntComparer, TestData.StorageTime);
 
         tempStorage.Should().BeEmpty();
         DefaultStorageTimeShouldBeSet(tempStorage);
@@ -36,7 +36,7 @@ public class ConstructorsTest
     [Fact]
     public void Capacity_DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(Capacity, TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(Capacity, TestData.StorageTime);
 
         tempStorage.Should().BeEmpty();
         DefaultStorageTimeShouldBeSet(tempStorage);
@@ -45,7 +45,7 @@ public class ConstructorsTest
     [Fact]
     public void Capacity_Comparer_DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(Capacity, TempStorageItemIntComparer, TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(Capacity, TempStorageItemIntComparer, TestData.StorageTime);
 
         tempStorage.Should().BeEmpty();
         DefaultStorageTimeShouldBeSet(tempStorage);
@@ -54,7 +54,7 @@ public class ConstructorsTest
     [Fact]
     public void Collection_DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(IntCollection, TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(IntCollection, TestData.StorageTime);
 
         DefaultStorageTimeShouldBeSet(tempStorage);
         ShouldBeInitializedFromCollection(tempStorage);
@@ -64,7 +64,7 @@ public class ConstructorsTest
     [Fact]
     public void Collection_Comparer_DefaultStorageTime()
     {
-        var tempStorage = new TempStorage<int>(IntCollection, TempStorageItemIntComparer, TestData.StorageTime);
+        var tempStorage = new AutoStorage<int>(IntCollection, TempStorageItemIntComparer, TestData.StorageTime);
 
         DefaultStorageTimeShouldBeSet(tempStorage);
         ShouldBeInitializedFromCollection(tempStorage);
@@ -73,12 +73,12 @@ public class ConstructorsTest
 
 
 
-    static void DefaultStorageTimeShouldBeSet<T>(TempStorage<T> tempStorage) where T : notnull
+    static void DefaultStorageTimeShouldBeSet<T>(AutoStorage<T> tempStorage) where T : notnull
     {
         ((double)tempStorage.DefaultStorageTime!).Should().Be(TestData.StorageTime);
     }
 
-    static void ShouldBeInitializedFromCollection(TempStorage<int> tempStorage)
+    static void ShouldBeInitializedFromCollection(AutoStorage<int> tempStorage)
     {
         tempStorage
             .IntersectBy(IntCollection, tempStorageItem => tempStorageItem)
@@ -86,7 +86,7 @@ public class ConstructorsTest
             .Should().BeEquivalentTo(IntCollection);
     }
 
-    static void StorageTimersShouldBeInitialized<T>(TempStorage<T> tempStorage) =>
+    static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> tempStorage) =>
         tempStorage.All(value => IsInitialized(tempStorage[value].Timer!)).Should().BeTrue();
 
     static bool IsInitialized(GTimer storageTimer) => storageTimer.Interval == TestData.StorageTime && storageTimer.Enabled;

@@ -6,7 +6,7 @@ namespace System.Collections.Specialized;
 /// Collection that automatically removes items after their <see cref="StorageTime"/> is elapsed.
 /// </summary>
 /// <typeparam name="T">The type of stored items.</typeparam>
-public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<T>
+public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<T>
 {
     readonly HashSet<TempStorageItem<T>> _tempStorage;
     readonly StorageTimerFactory _storageTimerFactory;
@@ -16,36 +16,36 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// </summary>
     public StorageTime DefaultStorageTime => _storageTimerFactory.DefaultStorageTime;
     /// <summary>
-    /// Raised when some item is removed from <see cref="TempStorage{T}"/> due to elapsed storage time.
+    /// Raised when some item is removed from <see cref="AutoStorage{T}"/> due to elapsed storage time.
     /// </summary>
     public event EventHandler<TempStorageItem<T>>? ItemStorageTimeElapsed;
 
 
     #region Constructors
     /// <summary>
-    /// Initializes empty <see cref="TempStorage{T}"/> with <see cref="DefaultStorageTime"/> set to <see cref="StorageTime.Unlimited"/>.
+    /// Initializes empty <see cref="AutoStorage{T}"/> with <see cref="DefaultStorageTime"/> set to <see cref="StorageTime.Unlimited"/>.
     /// </summary>
-    public TempStorage() : this(EqualityComparer<TempStorageItem<T>>.Default)
+    public AutoStorage() : this(EqualityComparer<TempStorageItem<T>>.Default)
     {
     }
 
     /// <summary>
-    /// Initializes empty <see cref="TempStorage{T}"/> with <see cref="DefaultStorageTime"/> set to <paramref name="defaultStorageTime"/>.
+    /// Initializes empty <see cref="AutoStorage{T}"/> with <see cref="DefaultStorageTime"/> set to <paramref name="defaultStorageTime"/>.
     /// </summary>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(StorageTime defaultStorageTime)
+    public AutoStorage(StorageTime defaultStorageTime)
         : this(EqualityComparer<TempStorageItem<T>>.Default, defaultStorageTime)
     {
     }
 
     /// <summary>
-    /// Initializes empty <see cref="TempStorage{T}"/> that uses the specified equality comparer for the storage type
+    /// Initializes empty <see cref="AutoStorage{T}"/> that uses the specified equality comparer for the storage type
     /// and sets <see cref="DefaultStorageTime"/> to <paramref name="defaultStorageTime"/>.
     /// </summary>
     /// <param name="comparer">The <see cref="EqualityComparer{T}"/> implementation to use when comparing values in the storage,
     /// or null to use the default <see cref="EqualityComparer{T}"/> implementation for the storage type.</param>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
+    public AutoStorage(IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
         _tempStorage = new(comparer);
@@ -53,26 +53,26 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
 
     /// <summary>
-    /// Initializes <see cref="TempStorage{T}"/> that is empty, but has reserved space for <paramref name="capacity"/> items
+    /// Initializes <see cref="AutoStorage{T}"/> that is empty, but has reserved space for <paramref name="capacity"/> items
     /// and sets <see cref="DefaultStorageTime"/> to <paramref name="defaultStorageTime"/>.
     /// </summary>
-    /// <param name="capacity">The initial size of the <see cref="TempStorage{T}"/>.</param>
+    /// <param name="capacity">The initial size of the <see cref="AutoStorage{T}"/>.</param>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(int capacity, StorageTime? defaultStorageTime = null)
+    public AutoStorage(int capacity, StorageTime? defaultStorageTime = null)
         : this(capacity, null, defaultStorageTime)
     {
     }
 
     /// <summary>
-    /// Initializes <see cref="TempStorage{T}"/> that is empty, but has reserved space for <paramref name="capacity"/> items
+    /// Initializes <see cref="AutoStorage{T}"/> that is empty, but has reserved space for <paramref name="capacity"/> items
     /// that uses the specified equality comparer for the storage type and sets <see cref="DefaultStorageTime"/>
     /// to <paramref name="defaultStorageTime"/>.
     /// </summary>
-    /// <param name="capacity">The initial size of the <see cref="TempStorage{T}"/>.</param>
+    /// <param name="capacity">The initial size of the <see cref="AutoStorage{T}"/>.</param>
     /// <param name="comparer">The <see cref="EqualityComparer{T}"/> implementation to use when comparing values in the storage,
     /// or null to use the default <see cref="EqualityComparer{T}"/> implementation for the storage type.</param>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(int capacity, IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
+    public AutoStorage(int capacity, IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
         _tempStorage = new(capacity, comparer);
@@ -80,25 +80,25 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
 
     /// <summary>
-    /// Initializes <see cref="TempStorage{T}"/> from <paramref name="collection"/> with <see cref="DefaultStorageTime"/>
+    /// Initializes <see cref="AutoStorage{T}"/> from <paramref name="collection"/> with <see cref="DefaultStorageTime"/>
     /// set to <paramref name="defaultStorageTime"/>.
     /// </summary>
-    /// <param name="collection">The collection whose elements are copied to the <see cref="TempStorage{T}"/>.</param>
+    /// <param name="collection">The collection whose elements are copied to the <see cref="AutoStorage{T}"/>.</param>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(IEnumerable<T> collection, StorageTime? defaultStorageTime = null)
+    public AutoStorage(IEnumerable<T> collection, StorageTime? defaultStorageTime = null)
         : this(collection, null, defaultStorageTime)
     {
     }
 
     /// <summary>
-    /// Initializes <see cref="TempStorage{T}"/> from <paramref name="collection"/> aht uses the specified equality comparer
+    /// Initializes <see cref="AutoStorage{T}"/> from <paramref name="collection"/> aht uses the specified equality comparer
     /// for the storage type and sets <see cref="DefaultStorageTime"/> to <paramref name="defaultStorageTime"/>.
     /// </summary>
-    /// <param name="collection">The collection whose elements are copied to the <see cref="TempStorage{T}"/>.</param>
+    /// <param name="collection">The collection whose elements are copied to the <see cref="AutoStorage{T}"/>.</param>
     /// <param name="comparer">The <see cref="EqualityComparer{T}"/> implementation to use when comparing values in the storage,
     /// or null to use the default <see cref="EqualityComparer{T}"/> implementation for the storage type.</param>
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
-    public TempStorage(IEnumerable<T> collection, IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
+    public AutoStorage(IEnumerable<T> collection, IEqualityComparer<TempStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
         _tempStorage = new(collection.Select(
@@ -109,7 +109,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
 
     /// <summary>
-    /// Adds <paramref name="item"/> to <see cref="TempStorage{T}"/> or resets its storage time.
+    /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> or resets its storage time.
     /// </summary>
     /// <param name="item">The item to add or whose storage time to reset.</param>
     public void AddOrResetStorageTime(T item) => AddOrUpdateStorageTime(
@@ -117,7 +117,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         updateStorageTimer: false);
 
     /// <summary>
-    /// Adds <paramref name="item"/>  to <see cref="TempStorage{T}"/> with the specified <paramref name="storageTime"/>.
+    /// Adds <paramref name="item"/>  to <see cref="AutoStorage{T}"/> with the specified <paramref name="storageTime"/>.
     /// </summary>
     /// <param name="item">The item to add or whose storage time to update to <paramref name="storageTime"/>.</param>
     /// <param name="storageTime">The storage time to update item's storage time to.</param>
@@ -174,12 +174,12 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     bool Remove(TempStorageItem<T> item) => Remove(item.Value);
 
     /// <summary>
-    /// Removes the specified item from a <see cref="TempStorage{T}"/>.
+    /// Removes the specified item from a <see cref="AutoStorage{T}"/>.
     /// </summary>
     /// <param name="item">The item to remove.</param>
     /// <returns>
     /// <i>true</i> if the item is successfully found and removed; otherwise, <i>false</i>. This method returns
-    /// <i>false</i> if <paramref name="item"/> is not found in the <see cref="TempStorage{T}"/> object.
+    /// <i>false</i> if <paramref name="item"/> is not found in the <see cref="AutoStorage{T}"/> object.
     /// </returns>
     public bool Remove(T item) => _tempStorage.Remove(new TempStorageItem<T>(item));
 
@@ -194,7 +194,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// </summary>
     /// <param name="item">The item to add to the storage.</param>
     /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="TempStorage{T}"/>;
+    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
     /// <i>false</i> if the item is already present.
     /// </returns>
     public bool Add(T item) => _tempStorage.Add(
@@ -208,7 +208,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="item">The item to add to the storage.</param>
     /// <param name="storageTime">The storage time with which the item is added</param>
     /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="TempStorage{T}"/>;
+    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
     /// <i>false</i> if the item is already present.
     /// </returns>
     public bool Add(T item, StorageTime storageTime) =>
@@ -224,7 +224,7 @@ public class TempStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// </remarks>
     /// <param name="item">The item to add to the storage.</param>
     /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="TempStorage{T}"/>;
+    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
     /// <i>false</i> if the item is already present.
     /// </returns>
     bool Add(TempStorageItem<T> item) => _tempStorage.Add(item);

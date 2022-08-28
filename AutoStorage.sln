@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoStorage", "AutoStorage\AutoStorage.csproj", "{247AF7CD-8361-4A7A-92E1-0515E6AE2DE2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoStorage.Test", "AutoStorage.Test\AutoStorage.Test.csproj", "{49519D5D-CCFB-4876-A505-D20433FE7BA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{247AF7CD-8361-4A7A-92E1-0515E6AE2DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{247AF7CD-8361-4A7A-92E1-0515E6AE2DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{247AF7CD-8361-4A7A-92E1-0515E6AE2DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{247AF7CD-8361-4A7A-92E1-0515E6AE2DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49519D5D-CCFB-4876-A505-D20433FE7BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49519D5D-CCFB-4876-A505-D20433FE7BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49519D5D-CCFB-4876-A505-D20433FE7BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49519D5D-CCFB-4876-A505-D20433FE7BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8AA11C9-A7B2-470B-A0F1-AE5DFC2E2248}
+	EndGlobalSection
+EndGlobal
