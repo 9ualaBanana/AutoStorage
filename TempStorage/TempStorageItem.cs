@@ -24,6 +24,7 @@ public class TempStorageItem<T> : IEquatable<TempStorageItem<T>>
     }
     #endregion
 
+
     #region Equality
     public override bool Equals(object? obj) => Equals(obj as TempStorageItem<T>);
     public bool Equals(TempStorageItem<T>? other)
