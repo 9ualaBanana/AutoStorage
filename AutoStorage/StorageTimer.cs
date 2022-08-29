@@ -33,6 +33,8 @@ public class StorageTimer
     void Start() => _timer?.Start();
 
     internal void Restart() => _timer?.Restart();
+
+    public Interval Uptime => _timer?.Uptime ?? TimeSpan.Zero;
     #endregion
 
 
