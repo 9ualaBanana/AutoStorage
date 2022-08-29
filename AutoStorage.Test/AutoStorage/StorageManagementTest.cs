@@ -20,14 +20,15 @@ public class StorageManagementTest
         var tempStorage = new AutoStorage<int>(TestData.StorageTime);
         var value = new Random().Next();
         tempStorage.Add(value);
-        var tempStorageItem = tempStorage[value];
-        var storageTimeBeforeUpdate = tempStorageItem.Timer.Interval;
+        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        var storageTimeBeforeUpdate = storageTimer!.Interval;
 
         tempStorage.TryUpdate(value, TestData.DifferentStorageTime).Should().BeTrue();
 
+        tempStorage.TryGetStorageTimerOf(value, out storageTimer);
         storageTimeBeforeUpdate.Should().Be(TestData.StorageTime);
-        tempStorageItem.Timer.Interval.Should().Be(TestData.DifferentStorageTime);
-        tempStorageItem.Timer.ShouldBeReset();
+        storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
+        storageTimer.ShouldBeReset();
     }
 
     [Fact]
@@ -49,7 +50,8 @@ public class StorageManagementTest
 
         tempStorage.AddOrResetStorageTime(value);
 
-        tempStorage[value].Timer.ShouldBeReset();
+        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        storageTimer!.ShouldBeReset();
     }
 
     [Fact]
@@ -60,7 +62,8 @@ public class StorageManagementTest
 
         tempStorage.AddOrUpdateStorageTime(value, TestData.DifferentStorageTime);
 
-        tempStorage[value].Timer.Interval.Should().Be(TestData.DifferentStorageTime);
+        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
     }
 
     [Fact]
@@ -71,7 +74,8 @@ public class StorageManagementTest
 
         tempStorage.AddOrUpdateStorageTime(value, TestData.DifferentStorageTime);
 
-        tempStorage[value].Timer.Interval.Should().Be(TestData.DifferentStorageTime);
+        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
     }
 }
 

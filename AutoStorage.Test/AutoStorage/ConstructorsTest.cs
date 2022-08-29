@@ -86,8 +86,14 @@ public class ConstructorsTest
             .Should().BeEquivalentTo(IntCollection);
     }
 
-    static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> tempStorage) =>
-        tempStorage.All(value => IsInitialized(tempStorage[value].Timer!)).Should().BeTrue();
+    static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> tempStorage)
+    {
+        foreach (var item in tempStorage)
+        {
+            tempStorage.TryGetStorageTimerOf(item, out var storageTimer);
+            IsInitialized(storageTimer!).Should().BeTrue();
+        }
+    }
 
     static bool IsInitialized(StorageTimer storageTimer) => storageTimer.Interval == TestData.StorageTime && storageTimer.Enabled;
 }

@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Timers;
 
 namespace System.Collections.Specialized;
 
@@ -107,6 +108,22 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     }
     #endregion
 
+
+    /// <summary>
+    /// Retrieves the storage timer of <paramref name="item"/> if it is in storage.
+    /// </summary>
+    /// <param name="item">The item whose storage timer to get.</param>
+    /// <param name="storageTimer">The storage timer of the <paramref name="item"/>.</param>
+    /// <returns>The value indicating whether item's storage timer is successfully retrieved.</returns>
+    public bool TryGetStorageTimerOf(T item, [MaybeNullWhen(false)] out StorageTimer storageTimer)
+    {
+        storageTimer = null;
+
+        if (_tempStorage.TryGetValue(new TempStorageItem<T>(item), out var storedItem))
+        { storageTimer = storedItem.Timer; return true; }
+
+        else return false;
+    }
 
     /// <summary>
     /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> or resets its storage time.
@@ -269,16 +286,6 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
                 itemWithElapsedStorageTimer.Timer.Elapsed -= OnStorageTimeElapsed;
                 ItemStorageTimeElapsed?.Invoke(this, itemWithElapsedStorageTimer);
             }
-        }
-    }
-
-    // Used exclusively for testing purposes.
-    internal TempStorageItem<T> this[T value]
-    {
-        get
-        {
-            _ = _tempStorage.TryGetValue(new TempStorageItem<T>(value), out var item);
-            return item!;
         }
     }
 }
