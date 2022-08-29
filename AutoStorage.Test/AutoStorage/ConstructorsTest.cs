@@ -4,7 +4,7 @@ public class ConstructorsTest
 {
     static readonly IEnumerable<int> IntCollection = Enumerable.Range(0, 10);
     const int Capacity = 10;
-    static readonly EqualityComparer<TempStorageItem<int>> TempStorageItemIntComparer = EqualityComparer<TempStorageItem<int>>.Default;
+    static readonly EqualityComparer<AutoStorageItem<int>> TempStorageItemIntComparer = EqualityComparer<AutoStorageItem<int>>.Default;
 
     [Fact]
     public void Empty()

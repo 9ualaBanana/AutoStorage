@@ -88,7 +88,7 @@ static class TestExtensions
         Thread.Sleep((int)(after + extraTime));
         tempStorageEventSource.Should().Raise(nameof(tempStorage.ItemStorageTimeElapsed))
             .WithSender(tempStorage)
-            .WithArgs<TempStorageItem<T>>(tempStorageItem =>
+            .WithArgs<AutoStorageItem<T>>(tempStorageItem =>
                 tempStorageItem.Value != null
                 && tempStorageItem.Value.Equals(item)
                 && !tempStorage.Contains(tempStorageItem.Value));
