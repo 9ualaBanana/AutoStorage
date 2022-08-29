@@ -1,10 +1,8 @@
-﻿using System.Timers;
-
-namespace System.Collections.Specialized;
+﻿namespace System.Collections.Specialized;
 
 public class AutoStorageItem<T> : IEquatable<AutoStorageItem<T>>
 {
-    public readonly T Value;
+    public T Value { get; internal set; }
     public StorageTimer Timer;
 
 
