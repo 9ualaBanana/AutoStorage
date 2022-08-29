@@ -110,6 +110,22 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
 
     /// <summary>
+    /// Retrieves <paramref name="equalValue"/> if it is in storage.
+    /// </summary>
+    /// <param name="equalValue">The value to search for.</param>
+    /// <param name="actualValue">The value from the storage that the search found
+    /// or the default value of <typeparamref name="T"/> if the search yielded no result.</param>
+    /// <returns>A value indicating whether the search was successful.</returns>
+    public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
+    {
+        actualValue = default;
+        if (_tempStorage.TryGetValue(new(equalValue), out var storedItem))
+        { actualValue = storedItem.Value; return true; }
+
+        else return false;
+    }
+
+    /// <summary>
     /// Retrieves the storage timer of <paramref name="item"/> if it is in storage.
     /// </summary>
     /// <param name="item">The item whose storage timer to get.</param>
