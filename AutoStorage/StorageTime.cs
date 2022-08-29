@@ -16,9 +16,6 @@ public struct StorageTime
     StorageTime(Interval? storageTime) => _value = storageTime;
 
 
-    internal static StorageTime Of(StorageTimer storageTimer) => storageTimer.IsUnlimited ?
-        StorageTime.Unlimited : storageTimer.Interval;
-
     #region Conversions
     public static implicit operator StorageTime(Interval? storageTime) => new(storageTime);
     public static implicit operator Interval?(StorageTime storageTime) => storageTime._value;

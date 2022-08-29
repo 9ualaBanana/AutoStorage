@@ -6,7 +6,7 @@ internal class StorageTimerFactory
 {
     internal readonly StorageTime DefaultStorageTime;
     internal StorageTimer DefaultStorageTimer(params ElapsedEventHandler[] with) => CreateWith(DefaultStorageTime, with);
-    internal static readonly GTimer? UnlimitedStorageTimer = StorageTimer.Unlimited;
+    internal static readonly StorageTimer UnlimitedStorageTimer = StorageTimer.Unlimited;
 
 
     internal StorageTimerFactory(StorageTime? defaultStorageTime) =>
@@ -15,6 +15,6 @@ internal class StorageTimerFactory
 
     internal StorageTimer CreateWith(StorageTime storageTime, params ElapsedEventHandler[] elapsedEventHandlers) =>
         (storageTime.IsUnlimited ? StorageTimer.Unlimited : storageTime.IsDefault ?
-        DefaultStorageTimer(with: elapsedEventHandlers) : new GTimer((Interval)storageTime!)
+        DefaultStorageTimer(with: elapsedEventHandlers) : new StorageTimer(storageTime)
         ).Initialize(with: elapsedEventHandlers);
 }

@@ -10,7 +10,7 @@ public class StorageTimer
     public static readonly StorageTimer Unlimited = new(StorageTime.Unlimited);
 
     [MemberNotNullWhen(false, nameof(_timer))]
-    public bool IsUnlimited => _timer == (GTimer?)Unlimited;
+    public bool IsUnlimited => _timer == Unlimited._timer;
 
     #region WrappedGTimerInterface
     bool AutoReset { set { if (!IsUnlimited) _timer.AutoReset = value; } }
@@ -26,6 +26,8 @@ public class StorageTimer
     }
     event ElapsedEventHandler? _elapsed;
 
+    internal bool Enabled => _timer?.Enabled ?? false;
+
     public StorageTime Interval => _timer?.Interval ?? StorageTime.Unlimited;
 
     void Start() => _timer?.Start();
@@ -35,7 +37,7 @@ public class StorageTimer
 
 
     #region Constructors
-    StorageTimer(StorageTime storageTime)
+    internal StorageTimer(StorageTime storageTime)
         : this(storageTime.IsUnlimited ? null : new GTimer((Interval)storageTime!))
     {
     }
@@ -62,10 +64,4 @@ public class StorageTimer
         Start();
         return this;
     } 
-
-
-    #region Conversions
-    public static implicit operator StorageTimer(GTimer? timer) => new(timer);
-    public static implicit operator GTimer?(StorageTimer storageTimer) => storageTimer._timer;
-    #endregion
 }

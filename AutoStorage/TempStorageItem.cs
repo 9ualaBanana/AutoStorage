@@ -36,9 +36,9 @@ public class TempStorageItem<T> : IEquatable<TempStorageItem<T>>
     #endregion
 
     #region Conversions
-    public static implicit operator TempStorageItem<T>(KeyValuePair<T, GTimer?> pair) =>
+    public static implicit operator TempStorageItem<T>(KeyValuePair<T, StorageTimer> pair) =>
         new(pair.Key, pair.Value);
-    public static implicit operator KeyValuePair<T, GTimer?>(TempStorageItem<T> this_) =>
+    public static implicit operator KeyValuePair<T, StorageTimer>(TempStorageItem<T> this_) =>
         new(this_.Value, this_.Timer);
     #endregion
 }
@@ -53,7 +53,7 @@ internal static class TempStorageItemExtensions
 
     internal static TempStorageItem<T>? ItemWith<T>(this IEnumerable<TempStorageItem<T>> items, object elapsedStorageTimer)
     {
-        try { return items.Single(item => Equals((GTimer?)item.Timer, elapsedStorageTimer)); }
+        try { return items.Single(item => Equals(item.Timer, elapsedStorageTimer)); }
         catch { return null; }
     }
 }

@@ -16,7 +16,7 @@ public class StorageTimerTest
     [Fact]
     public void Initialize_ShouldThrow_WhenNoElapsedEventHandlersAreProvided()
     {
-        Action initialization = () => ((StorageTimer)new GTimer()).Initialize();
+        Action initialization = () => new StorageTimer(TestData.StorageTime).Initialize();
 
         initialization.Should().Throw<MissingMethodException>();
     }
@@ -24,10 +24,10 @@ public class StorageTimerTest
     [Fact]
     public void Initialize_Should_StartStorageTimer()
     {
-        var storageTimer = (StorageTimer)new GTimer();
+        var storageTimer = new StorageTimer(TestData.StorageTime);
 
         storageTimer.Initialize(TestData.ElapsedEventHandlerStub);
 
-        ((GTimer)storageTimer!).Enabled.Should().BeTrue();
+        storageTimer.Enabled.Should().BeTrue();
     }
 }

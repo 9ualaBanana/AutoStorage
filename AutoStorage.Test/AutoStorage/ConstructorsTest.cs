@@ -89,5 +89,5 @@ public class ConstructorsTest
     static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> tempStorage) =>
         tempStorage.All(value => IsInitialized(tempStorage[value].Timer!)).Should().BeTrue();
 
-    static bool IsInitialized(GTimer storageTimer) => storageTimer.Interval == TestData.StorageTime && storageTimer.Enabled;
+    static bool IsInitialized(StorageTimer storageTimer) => storageTimer.Interval == TestData.StorageTime && storageTimer.Enabled;
 }
