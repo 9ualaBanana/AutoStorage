@@ -119,6 +119,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
     {
         actualValue = default;
+
         if (_tempStorage.TryGetValue(new(equalValue), out var storedItem))
         { actualValue = storedItem.Value; return true; }
 
@@ -133,7 +134,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <returns>The value indicating whether item's storage timer is successfully retrieved.</returns>
     public bool TryGetStorageTimerOf(T item, [MaybeNullWhen(false)] out StorageTimer storageTimer)
     {
-        storageTimer = null;
+        storageTimer = default;
 
         if (_tempStorage.TryGetValue(new(item), out var storedItem))
         { storageTimer = storedItem.Timer; return true; }
@@ -159,35 +160,66 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
     void AddOrUpdateStorageTime(AutoStorageItem<T> item, bool updateStorageTimer = true)
     {
-        if (!TryUpdate(item, updateStorageTimer))
+        if (!TryUpdateStorageTime(item, updateStorageTimer))
             Add(item);
     }
+
+    /// <summary>
+    /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> or updates it with <paramref name="updatedItem"/> and optionally resets its storage time.
+    /// </summary>
+    /// <param name="item">The item to add or update if it is already in storage.</param>
+    /// <param name="updatedItem">The updated item to update the item in storage with.</param>
+    /// <param name="updateIf">The predicate that determines whether to update the item if it is in storage;
+    /// null to always update if the item is in storage.</param>
+    /// <param name="resetStorageTime">Specifies whether to reset item's storage time upon update.</param>
+    public void AddOrUpdateItem(T item, T updatedItem, Predicate<T>? updateIf, bool resetStorageTime = true) =>
+        AddOrUpdateItem(item, _ => updatedItem, updateIf, resetStorageTime);
 
     /// <summary>
     /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> or updates it using <paramref name="updater"/> and optionally resets its storage time.
     /// </summary>
     /// <param name="item">The item to add or update if it is already in storage.</param>
     /// <param name="updater">The method used to update the item if it is already in storage.</param>
+    /// <param name="updateIf">The predicate that determines whether to update the item if it is in storage;
+    /// null to always update if the item is in storage.</param>
     /// <param name="resetStorageTime">Specifies whether to reset item's storage time upon update.</param>
-    public void AddOrUpdateItem(T item, Func<T, T> updater, bool resetStorageTime = true) =>
-        AddOrUpdateItem(item, updater, StorageTime.Default, resetStorageTime);
+    public void AddOrUpdateItem(T item, Func<T, T> updater, Predicate<T>? updateIf, bool resetStorageTime = true) =>
+        AddOrUpdateItem(item, updater, StorageTime.Default, updateIf, resetStorageTime);
+
+    /// <summary>
+    /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> or updates it with <paramref name="updatedItem"/> and optionally resets its storage time.
+    /// </summary>
+    /// <param name="item">The item to add or update if it is already in storage.</param>
+    /// <param name="updatedItem">The updated item to update the item in storage with.</param>
+    /// <param name="updateIf">The predicate that determines whether to update the item if it is in storage;
+    /// null to always update if the item is in storage.</param>
+    /// <param name="storageTime">The storage time to use when adding the item to the storage.</param>
+    /// <param name="resetStorageTime">Specifies whether to reset item's storage time upon update.</param>
+    public void AddOrUpdateItem(T item, T updatedItem, StorageTime storageTime, Predicate<T>? updateIf, bool resetStorageTime = true) =>
+        AddOrUpdateItem(item, _ => updatedItem, storageTime, updateIf, resetStorageTime);
 
     /// <summary>
     /// Adds <paramref name="item"/> to <see cref="AutoStorage{T}"/> with the provided <paramref name="storageTime"/>
     /// or updates it using <paramref name="updater"/> and optionally resets its storage time.
     /// </summary>
     /// <remarks>
-    /// To update item's storage time if it is already in storage use <see cref="TryUpdate(T, StorageTime)"/>.
+    /// To update item's storage time if it is already in storage use <see cref="TryUpdateStorageTime(T, StorageTime)"/>.
     /// </remarks>
     /// <param name="item">The item to add or update if it is already in storage.</param>
     /// <param name="updater">The method used to update the item if it is already in storage.</param>
+    ///     /// <param name="updateIf">The predicate that determines whether to update the item if it is in storage;
+    /// null to always update if the item is in storage.</param>
     /// <param name="storageTime">The storage time to use when adding the item to the storage.</param>
     /// <param name="resetStorageTime">Specifies whether to reset item's storage time upon update.</param>
-    public void AddOrUpdateItem(T item, Func<T, T> updater, StorageTime storageTime, bool resetStorageTime = true)
+    public void AddOrUpdateItem(T item, Func<T, T> updater, StorageTime storageTime, Predicate<T>? updateIf, bool resetStorageTime = true)
     {
         if (_tempStorage.TryGetValue(new(item), out var storedItem))
         {
-            storedItem.Value = updater(storedItem.Value);
+            if (updateIf is not null)
+            {
+                if (updateIf(storedItem.Value)) updater(storedItem.Value);
+            }
+            else updater(storedItem.Value);
             if (resetStorageTime) storedItem.Timer.Restart();
         }
         else Add(item, storageTime);
@@ -200,11 +232,11 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="item">The item to add or whose storage time to update to <paramref name="storageTime"/>.</param>
     /// <param name="storageTime">The storage time to update item's storage time to.</param>
     /// <returns><i>true</i> if item's storage time is successfully updated; <i>false</i> if item is not in the storage.</returns>
-    public bool TryUpdate(T item, StorageTime storageTime) => TryUpdate(
+    public bool TryUpdateStorageTime(T item, StorageTime storageTime) => TryUpdateStorageTime(
         new(item, _storageTimerFactory.CreateWith(storageTime, OnStorageTimeElapsed)),
         updateStorageTimer: true);
 
-    bool TryUpdate(AutoStorageItem<T> item, bool updateStorageTimer)
+    bool TryUpdateStorageTime(AutoStorageItem<T> item, bool updateStorageTimer)
     {
         if (_tempStorage.TryGetValue(item, out var storedItem))
         { Update(storedItem, item, updateStorageTimer); return true; }

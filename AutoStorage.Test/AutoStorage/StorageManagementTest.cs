@@ -23,7 +23,7 @@ public class StorageManagementTest
         tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
         var storageTimeBeforeUpdate = storageTimer!.Interval;
 
-        tempStorage.TryUpdate(value, TestData.DifferentStorageTime).Should().BeTrue();
+        tempStorage.TryUpdateStorageTime(value, TestData.DifferentStorageTime).Should().BeTrue();
 
         tempStorage.TryGetStorageTimerOf(value, out storageTimer);
         storageTimeBeforeUpdate.Should().Be(TestData.StorageTime);
