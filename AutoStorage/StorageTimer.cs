@@ -12,6 +12,8 @@ public class StorageTimer
     [MemberNotNullWhen(false, nameof(_timer))]
     public bool IsUnlimited => _timer == Unlimited._timer;
 
+    internal bool IsInitialized { get; private set; }
+
     #region WrappedGTimerInterface
     bool AutoReset { set { if (!IsUnlimited) _timer.AutoReset = value; } }
 
@@ -64,6 +66,7 @@ public class StorageTimer
             Elapsed += elapsedEventHandler;
         AutoReset = false;
         Start();
+        IsInitialized = true;
         return this;
     } 
 }
