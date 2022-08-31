@@ -48,7 +48,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
     public AutoStorage(IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
-        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
+        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
         _tempStorage = new(comparer);
     }
 
@@ -75,7 +75,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
     public AutoStorage(int capacity, IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
-        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
+        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
         _tempStorage = new(capacity, comparer);
     }
 
@@ -101,9 +101,9 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="defaultStorageTime">The storage time assigned to items by default when they are added without specifying one.</param>
     public AutoStorage(IEnumerable<T> collection, IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
-        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
+        _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
         _tempStorage = new(collection.Select(
-            element => new AutoStorageItem<T>(element, _storageTimerFactory.DefaultStorageTimer(with: OnStorageTimeElapsed))),
+            element => new AutoStorageItem<T>(element, _storageTimerFactory.DefaultStorageTimer)),
             comparer);
     }
     #endregion
@@ -127,7 +127,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         {
             storedItem.Value = updatedValue;
             if (storageTimeUse.HasFlag(StorageTimeUse.OnUpdate))
-                storedItem.Timer = _storageTimerFactory.CreateWith(storageTime, OnStorageTimeElapsed);
+                storedItem.Timer = _storageTimerFactory.CreateWith(storageTime);
             else if (resetStorageTime) storedItem.Timer.Restart();
         }
         else
@@ -184,7 +184,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     {
         if (_TryGetItem(value, out var storedItem))
         {
-            storedItem.Timer = _storageTimerFactory.CreateWith(storageTime, OnStorageTimeElapsed);
+            storedItem.Timer = _storageTimerFactory.CreateWith(storageTime);
             return true;
         }
 
@@ -219,7 +219,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <param name="value">The value to add or whose storage time to update to <paramref name="storageTime"/>.</param>
     /// <param name="storageTime">The storage time to update value's storage time to.</param>
     public void AddOrUpdateStorageTime(T value, StorageTime storageTime) =>
-        _AddOrUpdateStorageTime(new AutoStorageItem<T>(value, _storageTimerFactory.CreateWith(storageTime, OnStorageTimeElapsed)));
+        _AddOrUpdateStorageTime(new AutoStorageItem<T>(value, _storageTimerFactory.CreateWith(storageTime)));
 
     /// <summary>
     /// Resets value's storage time if it is in storage.
@@ -270,6 +270,76 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         else return false;
     }
 
+    #region ICollection<T>
+    void ICollection<T>.Add(T item) => Add(item);
+
+    public void Clear() => _tempStorage.Clear();
+
+    public bool Contains(T item) => _tempStorage.Contains(new(item));
+
+    public void CopyTo(T[] array, int arrayIndex) => _tempStorage.Values().ToArray().CopyTo(array, arrayIndex);
+
+    /// <summary>
+    /// Removes the specified item from a <see cref="AutoStorage{T}"/>.
+    /// </summary>
+    /// <param name="item">The item to remove.</param>
+    /// <returns>
+    /// <i>true</i> if the item is successfully found and removed; otherwise, <i>false</i>. This method returns
+    /// <i>false</i> if <paramref name="item"/> is not found in the <see cref="AutoStorage{T}"/> object.
+    /// </returns>
+    public bool Remove(T item) => _Remove(new(item));
+
+    public int Count => _tempStorage.Count;
+
+    bool ICollection<T>.IsReadOnly => false;
+    #endregion
+
+    #region ISet<T>
+    /// <summary>
+    /// Adds a value to the storage with <see cref="DefaultStorageTime"/> and returns a value to indicate if the value was successfully added.
+    /// </summary>
+    /// <param name="value">The item to add to the storage.</param>
+    /// <returns>
+    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
+    /// <i>false</i> if the item is already present.
+    /// </returns>
+    public bool Add(T value) =>
+        _Add(new(value, _storageTimerFactory.DefaultStorageTimer));
+
+    /// <summary>
+    /// Adds a value with the specified <paramref name="storageTime"/> to the storage
+    /// and returns a value to indicate if the item was successfully added.
+    /// </summary>
+    /// <param name="value">The value to add to the storage.</param>
+    /// <param name="storageTime">The storage time with which to add the value.</param>
+    /// <returns>
+    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
+    /// <i>false</i> if the item is already present.
+    /// </returns>
+    public bool Add(T value, StorageTime storageTime) =>
+        _Add(new(value, _storageTimerFactory.CreateWith(storageTime)));
+
+    public void ExceptWith(IEnumerable<T> other) => _tempStorage.ExceptWith(other.AsTempStorageItems());
+
+    public void IntersectWith(IEnumerable<T> other) => _tempStorage.IntersectWith(other.AsTempStorageItems());
+
+    public bool IsProperSubsetOf(IEnumerable<T> other) => _tempStorage.IsProperSubsetOf(other.AsTempStorageItems());
+
+    public bool IsProperSupersetOf(IEnumerable<T> other) => _tempStorage.IsProperSupersetOf(other.AsTempStorageItems());
+
+    public bool IsSubsetOf(IEnumerable<T> other) => _tempStorage.IsSubsetOf(other.AsTempStorageItems());
+
+    public bool IsSupersetOf(IEnumerable<T> other) => _tempStorage.IsSupersetOf(other.AsTempStorageItems());
+
+    public bool Overlaps(IEnumerable<T> other) => _tempStorage.Overlaps(other.AsTempStorageItems());
+
+    public bool SetEquals(IEnumerable<T> other) => _tempStorage.SetEquals(other.AsTempStorageItems());
+
+    public void SymmetricExceptWith(IEnumerable<T> other) => _tempStorage.SymmetricExceptWith(other.AsTempStorageItems());
+
+    public void UnionWith(IEnumerable<T> other) => _tempStorage.UnionWith(other.AsTempStorageItems());
+    #endregion
+
 
     #region InternalStorageInterface
     // TODO: Add _AddOrReetStorageTime but need to show somehow that Timer property of that AutoStorageItem is irrelevant.
@@ -302,19 +372,6 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
             $"{nameof(AutoStorageItem<T>)}'s storage timer must be initialized before adding it to the storage.",
             nameof(item));
     }
-    #endregion
-
-    #region ICollection<T>
-    void ICollection<T>.Add(T item) => Add(item, StorageTime.Default);
-
-    public void Clear() => _tempStorage.Clear();
-
-    public bool Contains(T item) => _tempStorage.Contains(new(item));
-
-    public void CopyTo(T[] array, int arrayIndex) => _tempStorage.Values().ToArray().CopyTo(array, arrayIndex);
-
-    /// <inheritdoc cref="Remove(T)"/>
-    bool Remove(AutoStorageItem<T> item) => Remove(item.Value);
 
     /// <summary>
     /// Removes the specified item from a <see cref="AutoStorage{T}"/>.
@@ -324,69 +381,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     /// <i>true</i> if the item is successfully found and removed; otherwise, <i>false</i>. This method returns
     /// <i>false</i> if <paramref name="item"/> is not found in the <see cref="AutoStorage{T}"/> object.
     /// </returns>
-    public bool Remove(T item) => _tempStorage.Remove(new AutoStorageItem<T>(item));
-
-    public int Count => _tempStorage.Count;
-
-    bool ICollection<T>.IsReadOnly => false;
-    #endregion
-
-    #region ISet<T>
-    /// <summary>
-    /// Adds an item to the storage and returns a value to indicate if the item was successfully added.
-    /// </summary>
-    /// <param name="value">The item to add to the storage.</param>
-    /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
-    /// <i>false</i> if the item is already present.
-    /// </returns>
-    public bool Add(T value) =>
-        _Add(new(value, _storageTimerFactory.DefaultStorageTimer(with: OnStorageTimeElapsed)));
-
-    /// <summary>
-    /// Adds an item with the specified <paramref name="storageTime"/> to the storage
-    /// and returns a value to indicate if the item was successfully added.
-    /// </summary>
-    /// <param name="value">The item to add to the storage.</param>
-    /// <param name="storageTime">The storage time with which the item is added</param>
-    /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
-    /// <i>false</i> if the item is already present.
-    /// </returns>
-    public bool Add(T value, StorageTime storageTime) =>
-        _Add(new(value, _storageTimerFactory.CreateWith(storageTime, OnStorageTimeElapsed)));
-
-    /// <summary>
-    /// Adds an item to a storage and returns a value to indicate if the item was successfully added.
-    /// </summary>
-    /// <remarks>
-    /// Only items with already initialized storage timers must be passed.
-    /// </remarks>
-    /// <param name="item">The item to add to the storage.</param>
-    /// <returns>
-    /// <i>true</i> if the item is added to the <see cref="AutoStorage{T}"/>;
-    /// <i>false</i> if the item is already present.
-    /// </returns>
-
-    public void ExceptWith(IEnumerable<T> other) => _tempStorage.ExceptWith(other.AsTempStorageItems());
-
-    public void IntersectWith(IEnumerable<T> other) => _tempStorage.IntersectWith(other.AsTempStorageItems());
-
-    public bool IsProperSubsetOf(IEnumerable<T> other) => _tempStorage.IsProperSubsetOf(other.AsTempStorageItems());
-
-    public bool IsProperSupersetOf(IEnumerable<T> other) => _tempStorage.IsProperSupersetOf(other.AsTempStorageItems());
-
-    public bool IsSubsetOf(IEnumerable<T> other) => _tempStorage.IsSubsetOf(other.AsTempStorageItems());
-
-    public bool IsSupersetOf(IEnumerable<T> other) => _tempStorage.IsSupersetOf(other.AsTempStorageItems());
-
-    public bool Overlaps(IEnumerable<T> other) => _tempStorage.Overlaps(other.AsTempStorageItems());
-
-    public bool SetEquals(IEnumerable<T> other) => _tempStorage.SetEquals(other.AsTempStorageItems());
-
-    public void SymmetricExceptWith(IEnumerable<T> other) => _tempStorage.SymmetricExceptWith(other.AsTempStorageItems());
-
-    public void UnionWith(IEnumerable<T> other) => _tempStorage.UnionWith(other.AsTempStorageItems());
+    bool _Remove(AutoStorageItem<T> item) => _tempStorage.Remove(item);
     #endregion
 
     #region Enumeration
@@ -403,7 +398,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         var itemWithElapsedStorageTimer = _tempStorage.ItemWith(elapsedStorageTimer!);
         if (itemWithElapsedStorageTimer is not null)
         {
-            if (Remove(itemWithElapsedStorageTimer))
+            if (_Remove(itemWithElapsedStorageTimer))
             {
                 itemWithElapsedStorageTimer.Timer.Elapsed -= OnStorageTimeElapsed;
                 ItemStorageTimeElapsed?.Invoke(this, itemWithElapsedStorageTimer);

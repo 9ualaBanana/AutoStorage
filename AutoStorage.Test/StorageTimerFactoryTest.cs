@@ -7,7 +7,7 @@ public class StorageTimerFactoryTest
     {
         var defaultStorageTime = TestData.StorageTime;
 
-        var storageTimerFactory = new StorageTimerFactory(defaultStorageTime);
+        var storageTimerFactory = new StorageTimerFactory(defaultStorageTime, TestData.ElapsedEventHandlerStub);
 
         storageTimerFactory.DefaultStorageTime.Should().Be(defaultStorageTime);
     }
@@ -15,10 +15,10 @@ public class StorageTimerFactoryTest
     [Fact]
     public void CreateWith_UnlimitedStorageTime_ShouldReturn_UnlimitedStorageTimer()
     {
-        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime);
+        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime, TestData.ElapsedEventHandlerStub);
 
         var unlimitedStorageTimer = storageTimerFactory
-            .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);
+            .CreateWith(StorageTime.Unlimited);
 
         unlimitedStorageTimer.IsUnlimited.Should().BeTrue();
     }
@@ -26,10 +26,10 @@ public class StorageTimerFactoryTest
     [Fact]
     public void CreateWith_DefaultStorageTime_ShouldReturn_TimerWithDefaultStorageTime()
     {
-        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime);
+        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime, TestData.ElapsedEventHandlerStub);
 
         var timerWithDefaultStorageTime = storageTimerFactory
-            .CreateWith(StorageTime.Default, TestData.ElapsedEventHandlerStub)!;
+            .CreateWith(StorageTime.Default)!;
 
         timerWithDefaultStorageTime.Interval.Should().Be(storageTimerFactory.DefaultStorageTime);
     }
@@ -39,8 +39,8 @@ public class StorageTimerFactoryTest
     {
         var finiteStorageTime = TestData.StorageTime;
 
-        var finiteStorageTimer = new StorageTimerFactory(TestData.DifferentStorageTime)
-            .CreateWith(finiteStorageTime, TestData.ElapsedEventHandlerStub)!;
+        var finiteStorageTimer = new StorageTimerFactory(TestData.DifferentStorageTime, TestData.ElapsedEventHandlerStub)
+            .CreateWith(finiteStorageTime)!;
 
         finiteStorageTimer.Interval.Should().Be(finiteStorageTime);
     }

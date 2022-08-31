@@ -5,10 +5,10 @@ public class StorageTimerTest
     [Fact]
     public void IsUnlimited_ShouldBe_TrueFor_UnlimitedStorageTimer()
     {
-        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime);
+        var storageTimerFactory = new StorageTimerFactory(TestData.StorageTime, TestData.ElapsedEventHandlerStub);
 
         var unlimitedStorageTimer = storageTimerFactory
-            .CreateWith(StorageTime.Unlimited, TestData.ElapsedEventHandlerStub);
+            .CreateWith(StorageTime.Unlimited);
 
         unlimitedStorageTimer.IsUnlimited.Should().BeTrue();
     }
@@ -16,7 +16,7 @@ public class StorageTimerTest
     [Fact]
     public void Initialize_ShouldThrow_WhenNoElapsedEventHandlersAreProvided()
     {
-        Action initialization = () => new StorageTimer(TestData.StorageTime).Initialize();
+        Action initialization = () => new StorageTimer(TestData.StorageTime).InitializeWith();
 
         initialization.Should().Throw<MissingMethodException>();
     }
@@ -26,7 +26,7 @@ public class StorageTimerTest
     {
         var storageTimer = new StorageTimer(TestData.StorageTime);
 
-        storageTimer.Initialize(TestData.ElapsedEventHandlerStub);
+        storageTimer.InitializeWith(TestData.ElapsedEventHandlerStub);
 
         storageTimer.Enabled.Should().BeTrue();
     }
