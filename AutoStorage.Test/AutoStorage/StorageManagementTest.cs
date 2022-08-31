@@ -18,17 +18,17 @@ public class StorageManagementTest
     public void TryUpdate_RestartsStorageTimer_IfItemIsInStorage()
     {
         var tempStorage = new AutoStorage<int>(TestData.StorageTime);
-        var value = new Random().Next();
-        tempStorage.Add(value);
-        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        var value = new Random().Next(); tempStorage.Add(value);
+        tempStorage.TryGetStorageTimer(value, out var storageTimer);
         var storageTimeBeforeUpdate = storageTimer!.Interval;
+        var storageTimerBeforeUpdate = storageTimer;
 
-        tempStorage.TryUpdateStorageTime(value, TestData.DifferentStorageTime).Should().BeTrue();
+        tempStorage.TryUpdateStorageTime(value, TestData.DifferentStorageTime);
 
-        tempStorage.TryGetStorageTimerOf(value, out storageTimer);
+        tempStorage.TryGetStorageTimer(value, out storageTimer);
         storageTimeBeforeUpdate.Should().Be(TestData.StorageTime);
         storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
-        storageTimer.ShouldBeReset();
+        storageTimer.Should().NotBeSameAs(storageTimerBeforeUpdate);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public class StorageManagementTest
 
         tempStorage.AddOrResetStorageTime(value);
 
-        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
-        storageTimer!.ShouldBeReset();
+        tempStorage.TryGetStorageTimer(value, out var storageTimer);
+        storageTimer!.LastResetTime.Should().NotBe(storageTimer.CreationTime);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class StorageManagementTest
 
         tempStorage.AddOrUpdateStorageTime(value, TestData.DifferentStorageTime);
 
-        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        tempStorage.TryGetStorageTimer(value, out var storageTimer);
         storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
     }
 
@@ -74,7 +74,7 @@ public class StorageManagementTest
 
         tempStorage.AddOrUpdateStorageTime(value, TestData.DifferentStorageTime);
 
-        tempStorage.TryGetStorageTimerOf(value, out var storageTimer);
+        tempStorage.TryGetStorageTimer(value, out var storageTimer);
         storageTimer!.Interval.Should().Be(TestData.DifferentStorageTime);
     }
 }
@@ -93,7 +93,4 @@ static class TestExtensions
                 && tempStorageItem.Value.Equals(item)
                 && !tempStorage.Contains(tempStorageItem.Value));
     }
-
-    internal static void ShouldBeReset(this StorageTimer storageTimer) =>
-        storageTimer.LastResetTime.Should().NotBe(storageTimer.CreationTime);
 }

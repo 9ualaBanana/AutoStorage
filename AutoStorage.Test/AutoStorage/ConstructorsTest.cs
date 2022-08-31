@@ -90,7 +90,7 @@ public class ConstructorsTest
     {
         foreach (var item in tempStorage)
         {
-            tempStorage.TryGetStorageTimerOf(item, out var storageTimer);
+            tempStorage.TryGetStorageTimer(item, out var storageTimer);
             IsInitialized(storageTimer!).Should().BeTrue();
         }
     }
