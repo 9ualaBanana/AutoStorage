@@ -57,13 +57,9 @@ public class StorageTimer
     #endregion
 
 
-    internal StorageTimer InitializeWith(params ElapsedEventHandler[] onElapsed)
+    internal StorageTimer InitializeWith(ElapsedEventHandler onElapsed)
     {
-        if (!onElapsed.Any()) throw new MissingMethodException(
-            $"Storage timer must be initialized with {nameof(ElapsedEventHandler)} responsible for removing items with elapsed storage time.");
-
-        foreach (var elapsedEventHandler in onElapsed)
-            Elapsed += elapsedEventHandler;
+        Elapsed += onElapsed;
         AutoReset = false;
         Start();
         IsInitialized = true;

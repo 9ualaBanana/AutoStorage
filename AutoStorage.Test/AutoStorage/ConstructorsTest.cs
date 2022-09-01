@@ -75,7 +75,7 @@ public class ConstructorsTest
 
     static void DefaultStorageTimeShouldBeSet<T>(AutoStorage<T> tempStorage) where T : notnull
     {
-        ((double)tempStorage.DefaultStorageTime!).Should().Be(TestData.StorageTime);
+        tempStorage.DefaultStorageTime.Should().Be(TestData.StorageTime);
     }
 
     static void ShouldBeInitializedFromCollection(AutoStorage<int> tempStorage)
