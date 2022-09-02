@@ -1,7 +1,12 @@
 ﻿namespace System.Collections.Specialized;
 
+/// <summary>
+/// Internal representation of values stored inside <see cref="AutoStorage{T}"/>.
+/// </summary>
+/// <typeparam name="T">The type of the value.</typeparam>
 public class AutoStorageItem<T> : IEquatable<AutoStorageItem<T>>
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public T Value { get; internal set; }
     public StorageTimer Timer;
 
@@ -39,6 +44,7 @@ public class AutoStorageItem<T> : IEquatable<AutoStorageItem<T>>
     public static implicit operator KeyValuePair<T, StorageTimer>(AutoStorageItem<T> this_) =>
         new(this_.Value, this_.Timer);
     #endregion
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
 
 internal static class TempStorageItemExtensions

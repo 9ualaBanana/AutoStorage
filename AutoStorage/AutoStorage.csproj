@@ -6,12 +6,12 @@
     <Nullable>enable</Nullable>
 
 	<PackageId>AutoStorage</PackageId>
-	<Version>4.0.1</Version>
+	<Version>4.0.2</Version>
 	<Authors>9ualaBanana</Authors>
 	<Company>9ualaBanana</Company>
 	<Copyright>9ualaBanana</Copyright>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<Description>Collection that automatically removes items after their storage time is elapsed.</Description>
+	<Description>Collection that automatically removes values after their storage time is elapsed.</Description>
 	<RepositoryUrl>https://github.com/9ualaBanana/TempStorage</RepositoryUrl>
 	<PackageTags>
 		interval; time; storage-time; timer; library; storage; collection; temp;
