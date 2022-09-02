@@ -3,10 +3,14 @@ using System.Timers;
 
 namespace System.Collections.Specialized;
 
+/// <summary>
+/// Used for supervising the storage time of values inside <see cref="AutoStorage{T}"/>.
+/// </summary>
 public class StorageTimer
 {
     private readonly GTimer? _timer;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static readonly StorageTimer Unlimited = new(StorageTime.Unlimited);
 
     [MemberNotNullWhen(false, nameof(_timer))]
@@ -20,6 +24,7 @@ public class StorageTimer
     public DateTimeOffset CreationTime;
 
     public DateTimeOffset LastResetTime => _timer?.LastResetTime ?? CreationTime;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     internal event ElapsedEventHandler Elapsed
     {
@@ -30,12 +35,18 @@ public class StorageTimer
 
     internal bool Enabled => _timer?.Enabled ?? false;
 
+    /// <summary>
+    /// Storage time after which the corresponding value is removed from <see cref="AutoStorage{T}"/> unless reset.
+    /// </summary>
     public StorageTime Interval => _timer?.Interval ?? StorageTime.Unlimited;
 
     void Start() => _timer?.Start();
 
     internal void Restart() => _timer?.Restart();
 
+    /// <summary>
+    /// Time spent in <see cref="Enabled"/> state.
+    /// </summary>
     public Interval Uptime => _timer?.Uptime ?? TimeSpan.Zero;
     #endregion
 
