@@ -213,6 +213,62 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     }
 
     /// <summary>
+    /// Gets <paramref name="value"/> from the storage or adds it with <see cref="DefaultStorageTime"/>.
+    /// </summary>
+    /// <param name="value">The value to get from or add to the storage.</param>
+    /// <returns>The value from the storage that is the result of calling this method.</returns>
+    [return: MaybeNull]
+    public T GetOrAddValue(T value)
+    {
+        if (TryGetValue(value, out var storedValue)) return storedValue;
+        else { Add(value); return value; }
+    }
+
+    /// <summary>
+    /// Gets <paramref name="value"/> from the storage or adds it with <see cref="DefaultStorageTime"/>.
+    /// </summary>
+    /// <param name="value">The value to get from or add to the storage.</param>
+    /// <param name="storageTime">The storage time to add the value with if it is not in the storage already.</param>
+    /// <returns>The value from the storage that is the result of calling this method.</returns>
+    [return: MaybeNull]
+    public T GetOrAddValue(T value, StorageTime storageTime)
+    {
+        if (TryGetValue(value, out var storedValue)) return storedValue;
+        else { Add(value, storageTime); return value; }
+    }
+
+    /// <summary>
+    /// Gets <paramref name="value"/>'s storage timer from the storage or adds the value with <see cref="DefaultStorageTime"/>.
+    /// </summary>
+    /// <param name="value">The value to add to the storage or get storage timer for.</param>
+    /// <returns>The storage timer of the value.</returns>
+    public StorageTimer GetSorageTimerOrAdd(T value)
+    {
+        if (TryGetStorageTimer(value, out var storageTimer)) return storageTimer;
+        else
+        {
+            Add(value); TryGetStorageTimer(value, out storageTimer);
+            return storageTimer!;
+        }
+    }
+
+    /// <summary>
+    /// Gets <paramref name="value"/>'s storage timer from the storage or adds the value with the specified <paramref name="storageTime"/>.
+    /// </summary>
+    /// <param name="value">The value to add to the storage or get storage timer for.</param>
+    /// <param name="storageTime">The storage time to add the value with if it is not in the storage already.</param>
+    /// <returns>The storage timer of the value.</returns>
+    public StorageTimer GetSorageTimerOrAdd(T value, StorageTime storageTime)
+    {
+        if (TryGetStorageTimer(value, out var storageTimer)) return storageTimer;
+        else
+        {
+            Add(value, storageTime); TryGetStorageTimer(value, out storageTimer);
+            return storageTimer!;
+        }
+    }
+
+    /// <summary>
     /// Retrieves <paramref name="value"/> if it is in storage.
     /// </summary>
     /// <param name="value">The value to search for.</param>
