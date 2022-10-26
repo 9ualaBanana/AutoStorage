@@ -1,4 +1,26 @@
-﻿using System.Diagnostics;
+﻿//MIT License
+
+//Copyright (c) 2022 9ualaBanana
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Timers;
 
@@ -10,7 +32,7 @@ namespace System.Collections.Specialized;
 /// <typeparam name="T">The type of stored values.</typeparam>
 public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<T>
 {
-    readonly HashSet<AutoStorageItem<T>> _tempStorage;
+    readonly HashSet<AutoStorageItem<T>> _autoStorage;
     readonly StorageTimerFactory _storageTimerFactory;
 
     /// <summary>
@@ -50,7 +72,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public AutoStorage(IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
-        _tempStorage = new(comparer);
+        _autoStorage = new(comparer);
     }
 
 
@@ -77,7 +99,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public AutoStorage(int capacity, IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
-        _tempStorage = new(capacity, comparer);
+        _autoStorage = new(capacity, comparer);
     }
 
 
@@ -103,7 +125,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public AutoStorage(IEnumerable<T> collection, IEqualityComparer<AutoStorageItem<T>>? comparer, StorageTime? defaultStorageTime = null)
     {
         _storageTimerFactory = new StorageTimerFactory(defaultStorageTime, OnStorageTimeElapsed);
-        _tempStorage = new(collection.Select(
+        _autoStorage = new(collection.Select(
             element => new AutoStorageItem<T>(element, _storageTimerFactory.DefaultStorageTimer)),
             comparer);
     }
@@ -300,13 +322,13 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     #region ICollection<T>
     void ICollection<T>.Add(T item) => Add(item);
 
-    public void Clear() => _tempStorage.Clear();
+    public void Clear() => _autoStorage.Clear();
 
-    public bool Contains(T item) => _tempStorage.Contains(new(item));
+    public bool Contains(T item) => _autoStorage.Contains(new(item));
 
-    public void CopyTo(T[] array, int arrayIndex) => _tempStorage.Values().ToArray().CopyTo(array, arrayIndex);
+    public void CopyTo(T[] array, int arrayIndex) => _autoStorage.Values().ToArray().CopyTo(array, arrayIndex);
 
-    public int Count => _tempStorage.Count;
+    public int Count => _autoStorage.Count;
 
     bool ICollection<T>.IsReadOnly => false;
 
@@ -346,25 +368,25 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public bool Add(T value, StorageTime storageTime) =>
         _Add(new(value, _storageTimerFactory.CreateWith(storageTime)));
 
-    public void ExceptWith(IEnumerable<T> other) => _tempStorage.ExceptWith(other.AsTempStorageItems());
+    public void ExceptWith(IEnumerable<T> other) => _autoStorage.ExceptWith(other.AsTempStorageItems());
 
-    public void IntersectWith(IEnumerable<T> other) => _tempStorage.IntersectWith(other.AsTempStorageItems());
+    public void IntersectWith(IEnumerable<T> other) => _autoStorage.IntersectWith(other.AsTempStorageItems());
 
-    public bool IsProperSubsetOf(IEnumerable<T> other) => _tempStorage.IsProperSubsetOf(other.AsTempStorageItems());
+    public bool IsProperSubsetOf(IEnumerable<T> other) => _autoStorage.IsProperSubsetOf(other.AsTempStorageItems());
 
-    public bool IsProperSupersetOf(IEnumerable<T> other) => _tempStorage.IsProperSupersetOf(other.AsTempStorageItems());
+    public bool IsProperSupersetOf(IEnumerable<T> other) => _autoStorage.IsProperSupersetOf(other.AsTempStorageItems());
 
-    public bool IsSubsetOf(IEnumerable<T> other) => _tempStorage.IsSubsetOf(other.AsTempStorageItems());
+    public bool IsSubsetOf(IEnumerable<T> other) => _autoStorage.IsSubsetOf(other.AsTempStorageItems());
 
-    public bool IsSupersetOf(IEnumerable<T> other) => _tempStorage.IsSupersetOf(other.AsTempStorageItems());
+    public bool IsSupersetOf(IEnumerable<T> other) => _autoStorage.IsSupersetOf(other.AsTempStorageItems());
 
-    public bool Overlaps(IEnumerable<T> other) => _tempStorage.Overlaps(other.AsTempStorageItems());
+    public bool Overlaps(IEnumerable<T> other) => _autoStorage.Overlaps(other.AsTempStorageItems());
 
-    public bool SetEquals(IEnumerable<T> other) => _tempStorage.SetEquals(other.AsTempStorageItems());
+    public bool SetEquals(IEnumerable<T> other) => _autoStorage.SetEquals(other.AsTempStorageItems());
 
-    public void SymmetricExceptWith(IEnumerable<T> other) => _tempStorage.SymmetricExceptWith(other.AsTempStorageItems());
+    public void SymmetricExceptWith(IEnumerable<T> other) => _autoStorage.SymmetricExceptWith(other.AsTempStorageItems());
 
-    public void UnionWith(IEnumerable<T> other) => _tempStorage.UnionWith(other.AsTempStorageItems());
+    public void UnionWith(IEnumerable<T> other) => _autoStorage.UnionWith(other.AsTempStorageItems());
     #endregion
 
 
@@ -389,7 +411,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
 
     bool _TryGetItem(AutoStorageItem<T> item, [MaybeNullWhen(false)] out AutoStorageItem<T> storedItem) =>
-        _tempStorage.TryGetValue(item, out storedItem);
+        _autoStorage.TryGetValue(item, out storedItem);
 
     void _Replace(AutoStorageItem<T> item, T updatedValue)
     {
@@ -402,15 +424,15 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
         Debug.Assert(item.Timer.IsInitialized,
             $"{nameof(AutoStorageItem<T>)}'s storage timer must be initialized before being added to the storage.");
 
-        return _tempStorage.Add(item);
+        return _autoStorage.Add(item);
     }
 
-    bool _Remove(AutoStorageItem<T> item) => _tempStorage.Remove(item);
+    bool _Remove(AutoStorageItem<T> item) => _autoStorage.Remove(item);
     #endregion
 
     #region Enumeration
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    public IEnumerator<T> GetEnumerator() => _tempStorage.Values().GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => _autoStorage.Values().GetEnumerator();
     #endregion
 
 
@@ -420,7 +442,7 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
                 nameof(elapsedStorageTimer),
                 "Storage timer must provide reference to itself when raising the event upon its elapse.");
 
-        var itemWithElapsedStorageTimer = _tempStorage.ItemWith(elapsedStorageTimer!);
+        var itemWithElapsedStorageTimer = _autoStorage.ItemWith(elapsedStorageTimer!);
         if (itemWithElapsedStorageTimer is not null)
         {
             if (_Remove(itemWithElapsedStorageTimer))

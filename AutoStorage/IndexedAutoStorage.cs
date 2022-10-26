@@ -20,32 +20,33 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Timers;
+using System.Collections;
+using System.Collections.Specialized;
 
-namespace System.Collections.Specialized;
+namespace AutoStorage;
 
-public struct StorageTime
+public class IndexedAutoStorage<I, T> : ICollection<KeyValuePair<I, T>
 {
-    readonly Interval? _value;
+    readonly Dictionary<I, T> _indexedAutoStorage;
+    readonly AutoStorage<T> _autoStorage;
 
-    public static readonly Interval? Unlimited = null;
-    public static readonly Interval Default = default;
+    public int Count => _autoStorage.Count;
+    public bool IsReadOnly => false;
+    public void Add(KeyValuePair<I, T> item)
+    {
+        _indexedAutoStorage.Add(item.Key, item.Value);
 
-    public bool IsUnlimited => _value == Unlimited;
-    public bool IsDefault => _value == Default;
+    }
 
+    public void Clear() { _autoStorage.Clear(); _indexedAutoStorage.Clear(); }
 
-    StorageTime(Interval? storageTime) => _value = storageTime;
+    public bool Contains(KeyValuePair<I, T> item) => _autoStorage.Contains(item.Value);
 
+    public void CopyTo(KeyValuePair<I, T>[] array, int arrayIndex) => _autoStorage.CopyTo(array, arrayIndex);
 
-    #region Conversions
-    public static implicit operator StorageTime(Interval? storageTime) => new(storageTime);
-    public static implicit operator Interval?(StorageTime storageTime) => storageTime._value;
+    public bool Remove(KeyValuePair<I, T> item)
+    { _autoStorage.Remove(item.Value); return _indexedAutoStorage.Remove(item.Key); }
 
-    public static implicit operator StorageTime(TimeSpan? storageTime) => new(storageTime);
-    public static implicit operator TimeSpan?(StorageTime storageTime) => storageTime._value;
-
-    public static implicit operator StorageTime(double? storageTime) => new(storageTime);
-    public static implicit operator double?(StorageTime storageTime) => storageTime._value;
-    #endregion
+    IEnumerator IEnumerable.GetEnumerator() => _indexedAutoStorage.GetEnumerator();
+    public IEnumerator<KeyValuePair<I, T>> GetEnumerator() => _indexedAutoStorage.GetEnumerator();
 }
