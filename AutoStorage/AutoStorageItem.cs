@@ -69,9 +69,9 @@ public class AutoStorageItem<T> : IEquatable<AutoStorageItem<T>>
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
 
-internal static class TempStorageItemExtensions
+internal static class AutoStorageItemExtensions
 {
-    internal static IEnumerable<AutoStorageItem<T>> AsTempStorageItems<T>(this IEnumerable<T> values) =>
+    internal static IEnumerable<AutoStorageItem<T>> AsAutoStorageItems<T>(this IEnumerable<T> values) =>
         values.Select(value => new AutoStorageItem<T>(value));
 
     internal static IEnumerable<T> Values<T>(this IEnumerable<AutoStorageItem<T>> items) =>

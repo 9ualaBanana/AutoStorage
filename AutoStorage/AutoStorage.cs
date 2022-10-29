@@ -368,25 +368,25 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
     public bool Add(T value, StorageTime storageTime) =>
         _Add(new(value, _storageTimerFactory.CreateWith(storageTime)));
 
-    public void ExceptWith(IEnumerable<T> other) => _autoStorage.ExceptWith(other.AsTempStorageItems());
+    public void ExceptWith(IEnumerable<T> other) => _autoStorage.ExceptWith(other.AsAutoStorageItems());
 
-    public void IntersectWith(IEnumerable<T> other) => _autoStorage.IntersectWith(other.AsTempStorageItems());
+    public void IntersectWith(IEnumerable<T> other) => _autoStorage.IntersectWith(other.AsAutoStorageItems());
 
-    public bool IsProperSubsetOf(IEnumerable<T> other) => _autoStorage.IsProperSubsetOf(other.AsTempStorageItems());
+    public bool IsProperSubsetOf(IEnumerable<T> other) => _autoStorage.IsProperSubsetOf(other.AsAutoStorageItems());
 
-    public bool IsProperSupersetOf(IEnumerable<T> other) => _autoStorage.IsProperSupersetOf(other.AsTempStorageItems());
+    public bool IsProperSupersetOf(IEnumerable<T> other) => _autoStorage.IsProperSupersetOf(other.AsAutoStorageItems());
 
-    public bool IsSubsetOf(IEnumerable<T> other) => _autoStorage.IsSubsetOf(other.AsTempStorageItems());
+    public bool IsSubsetOf(IEnumerable<T> other) => _autoStorage.IsSubsetOf(other.AsAutoStorageItems());
 
-    public bool IsSupersetOf(IEnumerable<T> other) => _autoStorage.IsSupersetOf(other.AsTempStorageItems());
+    public bool IsSupersetOf(IEnumerable<T> other) => _autoStorage.IsSupersetOf(other.AsAutoStorageItems());
 
-    public bool Overlaps(IEnumerable<T> other) => _autoStorage.Overlaps(other.AsTempStorageItems());
+    public bool Overlaps(IEnumerable<T> other) => _autoStorage.Overlaps(other.AsAutoStorageItems());
 
-    public bool SetEquals(IEnumerable<T> other) => _autoStorage.SetEquals(other.AsTempStorageItems());
+    public bool SetEquals(IEnumerable<T> other) => _autoStorage.SetEquals(other.AsAutoStorageItems());
 
-    public void SymmetricExceptWith(IEnumerable<T> other) => _autoStorage.SymmetricExceptWith(other.AsTempStorageItems());
+    public void SymmetricExceptWith(IEnumerable<T> other) => _autoStorage.SymmetricExceptWith(other.AsAutoStorageItems());
 
-    public void UnionWith(IEnumerable<T> other) => _autoStorage.UnionWith(other.AsTempStorageItems());
+    public void UnionWith(IEnumerable<T> other) => _autoStorage.UnionWith(other.AsAutoStorageItems());
     #endregion
 
 
