@@ -438,9 +438,9 @@ public class AutoStorage<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISet<
 
     void OnStorageTimeElapsed(object? elapsedStorageTimer, ElapsedEventArgs eventArgs)
     {
-        if (elapsedStorageTimer is null) throw new ArgumentNullException(
-                nameof(elapsedStorageTimer),
-                "Storage timer must provide reference to itself when raising the event upon its elapse.");
+        Debug.Assert(elapsedStorageTimer is not null,
+            "Storage timer must provide reference to itself when raising the event upon its elapse."
+            );
 
         var itemWithElapsedStorageTimer = _autoStorage.ItemWith(elapsedStorageTimer!);
         if (itemWithElapsedStorageTimer is not null)

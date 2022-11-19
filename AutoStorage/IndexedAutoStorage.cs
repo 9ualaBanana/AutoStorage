@@ -25,7 +25,7 @@ using System.Collections.Specialized;
 
 namespace AutoStorage;
 
-public class IndexedAutoStorage<I, T> : ICollection<KeyValuePair<I, T>
+public class IndexedAutoStorage<I, T> : ICollection<KeyValuePair<I, T>>
 {
     readonly Dictionary<I, T> _indexedAutoStorage;
     readonly AutoStorage<T> _autoStorage;
