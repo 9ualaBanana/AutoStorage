@@ -32,8 +32,9 @@ public class StorageTimer
 {
     private readonly GTimer? _timer;
 
+    internal static readonly StorageTimer Unlimited = new(StorageTime.Unlimited);
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public static readonly StorageTimer Unlimited = new(StorageTime.Unlimited);
 
     [MemberNotNullWhen(false, nameof(_timer))]
     public bool IsUnlimited => _timer == Unlimited._timer;
@@ -46,6 +47,7 @@ public class StorageTimer
     public DateTimeOffset CreationTime;
 
     public DateTimeOffset LastResetTime => _timer?.LastResetTime ?? CreationTime;
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     internal event ElapsedEventHandler Elapsed
