@@ -35,13 +35,14 @@ internal class StorageTimerFactory
 
     internal StorageTimerFactory(StorageTime? defaultStorageTime, ElapsedEventHandler onElapsed)
     {
-        DefaultStorageTime = defaultStorageTime ?? StorageTime.Unlimited;
+        DefaultStorageTime = defaultStorageTime is null || defaultStorageTime.Value.IsDefault ?
+            StorageTime.Unlimited : defaultStorageTime.Value;
         _onElapsed = onElapsed;
     }
 
 
     internal StorageTimer CreateWith(StorageTime storageTime) =>
         (storageTime.IsUnlimited ? StorageTimer.Unlimited : storageTime.IsDefault ?
-        DefaultStorageTimer : new StorageTimer(storageTime)
-        ).InitializeWith(_onElapsed);
+        DefaultStorageTimer : new StorageTimer(storageTime))
+        .InitializeWith(_onElapsed);
 }

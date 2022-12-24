@@ -24,7 +24,7 @@ using System.Timers;
 
 namespace System.Collections.Specialized;
 
-public struct StorageTime
+public readonly struct StorageTime
 {
     readonly Interval? _value;
 

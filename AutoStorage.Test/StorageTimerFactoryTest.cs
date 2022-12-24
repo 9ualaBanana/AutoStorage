@@ -44,4 +44,12 @@ public class StorageTimerFactoryTest
 
         finiteStorageTimer.Interval.Should().Be(finiteStorageTime);
     }
+
+    [Fact]
+    public void PassingStorageTimeDefaultToConstructor_Should_SetDefaultStorageTimeTo_StorageTimeUnlimited()
+    {
+        var storageTimeFactory = new StorageTimerFactory(StorageTime.Default, TestData.ElapsedEventHandlerStub);
+
+        storageTimeFactory.DefaultStorageTime.IsUnlimited.Should().BeTrue();
+    }
 }

@@ -9,88 +9,105 @@ public class ConstructorsTest
     [Fact]
     public void Empty()
     {
-        var tempStorage = new AutoStorage<int>();
+        var autoStorage = new AutoStorage<int>();
 
-        tempStorage.DefaultStorageTime.IsUnlimited.Should().BeTrue();
-        tempStorage.Should().BeEmpty();
+        autoStorage.DefaultStorageTime.IsUnlimited.Should().BeTrue();
+        autoStorage.Should().BeEmpty();
     }
 
     [Fact]
     public void DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(TestData.StorageTime);
 
-        tempStorage.Should().BeEmpty();
-        DefaultStorageTimeShouldBeSet(tempStorage);
+        autoStorage.Should().BeEmpty();
+        DefaultStorageTimeShouldBeSet(autoStorage);
+    }
+
+    [Fact]
+    public void DefaultStorageTimeZero_Should_SetDefaultStorageTimeToUnlimited()
+    {
+        var autoStorage = new AutoStorage<int>(StorageTime.Default);
+
+        autoStorage.DefaultStorageTime.IsUnlimited.Should().BeTrue();
     }
 
     [Fact]
     public void Comparer_DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(TempStorageItemIntComparer, TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(TempStorageItemIntComparer, TestData.StorageTime);
 
-        tempStorage.Should().BeEmpty();
-        DefaultStorageTimeShouldBeSet(tempStorage);
+        autoStorage.Should().BeEmpty();
+        DefaultStorageTimeShouldBeSet(autoStorage);
     }
 
     [Fact]
     public void Capacity_DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(Capacity, TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(Capacity, TestData.StorageTime);
 
-        tempStorage.Should().BeEmpty();
-        DefaultStorageTimeShouldBeSet(tempStorage);
+        autoStorage.Should().BeEmpty();
+        DefaultStorageTimeShouldBeSet(autoStorage);
     }
 
     [Fact]
     public void Capacity_Comparer_DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(Capacity, TempStorageItemIntComparer, TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(Capacity, TempStorageItemIntComparer, TestData.StorageTime);
 
-        tempStorage.Should().BeEmpty();
-        DefaultStorageTimeShouldBeSet(tempStorage);
+        autoStorage.Should().BeEmpty();
+        DefaultStorageTimeShouldBeSet(autoStorage);
     }
 
     [Fact]
     public void Collection_DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(IntCollection, TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(IntCollection, TestData.StorageTime);
 
-        DefaultStorageTimeShouldBeSet(tempStorage);
-        ShouldBeInitializedFromCollection(tempStorage);
-        StorageTimersShouldBeInitialized(tempStorage);
+        DefaultStorageTimeShouldBeSet(autoStorage);
+        ShouldBeInitializedFromCollection(autoStorage);
+        StorageTimersShouldBeInitialized(autoStorage);
     }
 
     [Fact]
     public void Collection_Comparer_DefaultStorageTime()
     {
-        var tempStorage = new AutoStorage<int>(IntCollection, TempStorageItemIntComparer, TestData.StorageTime);
+        var autoStorage = new AutoStorage<int>(IntCollection, TempStorageItemIntComparer, TestData.StorageTime);
 
-        DefaultStorageTimeShouldBeSet(tempStorage);
-        ShouldBeInitializedFromCollection(tempStorage);
-        StorageTimersShouldBeInitialized(tempStorage);
+        DefaultStorageTimeShouldBeSet(autoStorage);
+        ShouldBeInitializedFromCollection(autoStorage);
+        StorageTimersShouldBeInitialized(autoStorage);
+    }
+
+
+    [Fact]
+    public void ZeroStorageTime_ShouldNotBeSameAs_StorageTimeDefault()
+    {
+        var autoStorage = new AutoStorage<int>(0);
+
+        //autoStorage.DefaultStorageTime.IsDefault
     }
 
 
 
-    static void DefaultStorageTimeShouldBeSet<T>(AutoStorage<T> tempStorage) where T : notnull
+    static void DefaultStorageTimeShouldBeSet<T>(AutoStorage<T> autoStorage) where T : notnull
     {
-        tempStorage.DefaultStorageTime.Should().Be(TestData.StorageTime);
+        autoStorage.DefaultStorageTime.Should().Be(TestData.StorageTime);
     }
 
-    static void ShouldBeInitializedFromCollection(AutoStorage<int> tempStorage)
+    static void ShouldBeInitializedFromCollection(AutoStorage<int> autoStorage)
     {
-        tempStorage
+        autoStorage
             .IntersectBy(IntCollection, tempStorageItem => tempStorageItem)
             .Select(tempStorageItem => tempStorageItem)
             .Should().BeEquivalentTo(IntCollection);
     }
 
-    static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> tempStorage)
+    static void StorageTimersShouldBeInitialized<T>(AutoStorage<T> autoStorage)
     {
-        foreach (var item in tempStorage)
+        foreach (var item in autoStorage)
         {
-            tempStorage.TryGetStorageTimer(item, out var storageTimer);
+            autoStorage.TryGetStorageTimer(item, out var storageTimer);
             IsInitialized(storageTimer!).Should().BeTrue();
         }
     }

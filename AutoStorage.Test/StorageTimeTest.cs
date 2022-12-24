@@ -7,11 +7,18 @@ public class StorageTimeTest
     {
         ((StorageTime)StorageTime.Unlimited).IsUnlimited.Should().BeTrue();
     }
+    
+    [Fact]
+    public void IsDefault_ShouldBe_TrueFor_Default()
+    {
+        ((StorageTime)StorageTime.Default).IsDefault.Should().BeTrue();
+    }
 
     [Fact]
     public void Default_ShouldBe_IntervalDefaultExpression()
     {
         StorageTime.Default.Should().Be(default(Interval));
+        StorageTime.Default.Should().Be((Interval)0);
     }
 
     [Fact]

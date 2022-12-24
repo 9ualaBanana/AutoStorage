@@ -14,7 +14,7 @@ public class StorageTimerTest
     }
 
     [Fact]
-    public void Initialize_Should_StartStorageTimer()
+    public void InitializeWith_Should_StartStorageTimer()
     {
         var storageTimer = new StorageTimer(TestData.StorageTime);
 
